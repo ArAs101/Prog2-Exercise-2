@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
@@ -41,6 +42,9 @@ public class HomeController implements Initializable {
     protected ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
     protected SortedState sortedState;
+
+    @FXML
+    public Label sortingStatement;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -72,9 +76,13 @@ public class HomeController implements Initializable {
         if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle));
             sortedState = SortedState.ASCENDING;
+            sortBtn.setText("Sort (asc)");
+            sortingStatement.setText("Sorting Order: Ascending");
         } else if (sortedState == SortedState.ASCENDING) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
             sortedState = SortedState.DESCENDING;
+            sortBtn.setText("Sort (desc)");
+            sortingStatement.setText("Sorting Order: Descending");
         }
     }
 

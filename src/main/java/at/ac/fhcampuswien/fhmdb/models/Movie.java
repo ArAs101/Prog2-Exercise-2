@@ -63,6 +63,51 @@ public class Movie {
                 "The Wolf of Wall Street",
                 "Based on the true story of Jordan Belfort, from his rise to a wealthy stock-broker living the high life to his fall involving crime, corruption and the federal government.",
                 Arrays.asList(Genre.DRAMA, Genre.ROMANCE, Genre.BIOGRAPHY)));
+        movies.add(new Movie(
+                "The Dog",
+                "Movie about a cute dog.",
+                Arrays.asList(Genre.ANIMATION, Genre.FAMILY)
+        ));
+        movies.add(new Movie(
+                "CatsVenture",
+                "A cute cat on an adventure.",
+                Arrays.asList(Genre.ANIMATION, Genre.ADVENTURE)
+        ));
+        movies.add(new Movie(
+                "M3GAN",
+                "Horror movie about a highly intelligent humanoid doll.",
+                Arrays.asList(Genre.HORROR, Genre.THRILLER, Genre.DRAMA)
+        ));
+
+        movies.add(new Movie(
+                "The Godfather",
+                "Don Vito Corleone aggressively tries to make his son step in his own footsteps...",
+                Arrays.asList(Genre.CRIME, Genre.DRAMA)
+        ));
+
+        movies.add(new Movie(
+                "John Wick Chapter 4",
+                "John Wick uncovers a path to defeating The High Table. But before he can earn his " +
+                        "freedom, Wick must face off against a new enemy with powerful alliances across the " +
+                        "globe and forces that turn old friends into foes.",
+                Arrays.asList(Genre.ACTION, Genre.CRIME, Genre.THRILLER)
+        ));
+
+        movies.add(new Movie(
+                "Among Us",
+                "After the mysterious death of their young son, a couple desperately flees to a remote " +
+                        "lake house to escape the unrelenting haunting following them only to discover the mysterious" +
+                        " entity is still very much a part of their lives.",
+                Arrays.asList(Genre.DRAMA, Genre.HORROR, Genre.THRILLER)
+        ));
+
+        movies.add(new Movie(
+                "Avatar: The Way of Water",
+                "Jake Sully lives with his newfound family formed on the extrasolar moon Pandora. " +
+                        "Once a familiar threat returns to finish what was previously started, Jake must work " +
+                        "with Neytiri and the army of the Na'vi race to protect their home.",
+                Arrays.asList(Genre.ACTION, Genre.ADVENTURE, Genre.FANTASY)
+        ));
 
         return movies;
     }
