@@ -1,5 +1,6 @@
 package at.ac.fhcampuswien.fhmdb;
 
+import at.ac.fhcampuswien.fhmdb.api.MovieAPI;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
@@ -16,10 +17,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HomeController implements Initializable {
     @FXML
@@ -38,13 +38,12 @@ public class HomeController implements Initializable {
     public JFXButton sortBtn;
 
     public List<Movie> allMovies;
+    @FXML
+    public Label sortingStatement;
 
     protected ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
     protected SortedState sortedState;
-
-    @FXML
-    public Label sortingStatement;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -53,7 +52,8 @@ public class HomeController implements Initializable {
     }
 
     public void initializeState() {
-        allMovies = Movie.initializeMovies();
+        //allMovies = Movie.initializeMovies();
+        allMovies = MovieAPI.getAllMovies();
         observableMovies.clear();
         observableMovies.addAll(allMovies); // add all movies to the observable list
         sortedState = SortedState.NONE;
@@ -76,12 +76,10 @@ public class HomeController implements Initializable {
         if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle));
             sortedState = SortedState.ASCENDING;
-            sortBtn.setText("Sort (asc)");
             sortingStatement.setText("Sorting Order: Ascending");
         } else if (sortedState == SortedState.ASCENDING) {
             observableMovies.sort(Comparator.comparing(Movie::getTitle).reversed());
             sortedState = SortedState.DESCENDING;
-            sortBtn.setText("Sort (desc)");
             sortingStatement.setText("Sorting Order: Descending");
         }
     }
@@ -96,8 +94,8 @@ public class HomeController implements Initializable {
         return movies.stream()
                 .filter(Objects::nonNull)
                 .filter(movie ->
-                    movie.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    movie.getDescription().toLowerCase().contains(query.toLowerCase())
+                        movie.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                                movie.getDescription().toLowerCase().contains(query.toLowerCase())
                 )
                 .toList();
     }
@@ -143,5 +141,31 @@ public class HomeController implements Initializable {
 
     public void sortBtnClicked(ActionEvent actionEvent) {
         sortMovies();
+    }
+
+    public String getMostPopularActor(List<Movie> movies) {
+        Map<String, Integer> mainCastMap = new HashMap<>();
+        movies.stream().filter(Objects::nonNull).map(Movie::getMainCast).flatMap(List::stream)
+                .forEach(i -> {
+                    if (mainCastMap.containsKey(i)) {
+                        mainCastMap.put(i, mainCastMap.get(i)+1);
+                    }else {
+                        mainCastMap.put(i, 1);
+                    }
+                });
+        return mainCastMap.entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
+    }
+
+    public int getLongestMovieTitle(List<Movie> movies) {
+        return movies.stream().filter(Objects::nonNull).map(Movie::getTitle).map(String::length).max(Integer::compareTo).get();
+    }
+
+    public long countMoviesFrom(List<Movie> movies, String director){
+        return movies.stream().filter(Objects::nonNull).filter(movie -> movie.getDirectors().contains(director)).count();
+    }
+
+    public List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
+        return movies.stream().filter(Objects::nonNull).filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
+                .collect(Collectors.toList());
     }
 }
