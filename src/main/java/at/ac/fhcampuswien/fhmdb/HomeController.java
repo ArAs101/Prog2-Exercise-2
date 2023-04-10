@@ -41,6 +41,15 @@ public class HomeController implements Initializable {
     @FXML
     public Label sortingStatement;
 
+    @FXML
+    public JFXComboBox releaseComboBox;
+
+    @FXML
+    public JFXComboBox ratingComboBox;
+
+    @FXML
+    public JFXButton resetBtn;
+
     protected ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
 
     protected SortedState sortedState;
@@ -67,6 +76,17 @@ public class HomeController implements Initializable {
         genreComboBox.getItems().add("No filter");  // add "no filter" to the combobox
         genreComboBox.getItems().addAll(genres);    // add all genres to the combobox
         genreComboBox.setPromptText("Filter by Genre");
+
+        Integer[] years = new Integer[78];
+        int it = 0;
+        for (int i = 1946; i < 2024; i++) {
+            years[it] = i;
+            it++;
+        }
+        releaseComboBox.getItems().addAll(years);
+
+        Double[] ratings = new Double [] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
+        ratingComboBox.getItems().addAll(ratings);
     }
 
     // sort movies based on sortedState
@@ -113,7 +133,33 @@ public class HomeController implements Initializable {
                 .toList();
     }
 
-    public void applyAllFilters(String searchQuery, Object genre) {
+    public List<Movie> filterByYear(List<Movie> movies, int year){
+        if(year < 0) return null;
+
+        if(movies == null) {
+            throw new IllegalArgumentException("movies must not be null");
+        }
+
+        return movies.stream()
+                .filter(Objects::nonNull)
+                .filter(movie -> movie.getReleaseYear() == (year))
+                .toList();
+    }
+
+    public List<Movie> filterByRating(List<Movie> movies, double rating){
+        if(rating < 0) return movies;
+
+        if(movies == null) {
+            throw new IllegalArgumentException("movies must not be null");
+        }
+
+        return movies.stream()
+                .filter(Objects::nonNull)
+                .filter(movie -> movie.getRating() >= (rating))
+                .toList();
+    }
+
+    public void applyAllFilters(String searchQuery, Object genre, Integer year, Double rating) {
         List<Movie> filteredMovies = allMovies;
 
         if (!searchQuery.isEmpty()) {
@@ -124,6 +170,14 @@ public class HomeController implements Initializable {
             filteredMovies = filterByGenre(filteredMovies, Genre.valueOf(genre.toString()));
         }
 
+        if (year != null) {
+            filteredMovies = filterByYear(filteredMovies, year);
+        }
+
+        if (rating != null) {
+            filteredMovies = filterByRating(filteredMovies, rating);
+        }
+
         observableMovies.clear();
         observableMovies.addAll(filteredMovies);
     }
@@ -132,7 +186,7 @@ public class HomeController implements Initializable {
         String searchQuery = searchField.getText().trim().toLowerCase();
         Object genre = genreComboBox.getSelectionModel().getSelectedItem();
 
-        applyAllFilters(searchQuery, genre);
+        applyAllFilters(searchQuery, genre, (Integer) releaseComboBox.getSelectionModel().getSelectedItem(), (Double) ratingComboBox.getSelectionModel().getSelectedItem());
 
         if(sortedState != SortedState.NONE) {
             sortMovies();
@@ -167,5 +221,14 @@ public class HomeController implements Initializable {
     public List<Movie> getMoviesBetweenYears(List<Movie> movies, int startYear, int endYear) {
         return movies.stream().filter(Objects::nonNull).filter(movie -> movie.getReleaseYear() >= startYear && movie.getReleaseYear() <= endYear)
                 .collect(Collectors.toList());
+    }
+
+    public void resetBtnClicked(ActionEvent actionEvent) {
+        searchField.setText("");
+        genreComboBox.setValue(null);
+        releaseComboBox.setValue(null);
+        ratingComboBox.setValue(null);
+
+        initializeState();
     }
 }
