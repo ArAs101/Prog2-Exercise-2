@@ -40,7 +40,6 @@ public class MovieCell extends ListCell<Movie> {
                     .map(Enum::toString)
                     .collect(Collectors.joining(", "));
             genre.setText(genres);
-            //genre.getStyleClass().add("text-genre");
 
             // color scheme
             title.getStyleClass().add("text-yellow");
